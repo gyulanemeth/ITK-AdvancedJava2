@@ -17,5 +17,22 @@ public class Measurement {
 	private final double	accelY;
 	private final double	noise;
 	private final long		timestamp; //elvileg nincs ket azonos timestamp
-
+	
+	public Measurement(byte mid, byte node, int sequence, double volt,
+			double temp, double light, double magX, double magY, double accelX,
+			double accelY, double noise, long timestamp) {
+		super();
+		this.mid = mid;
+		this.node = node;
+		this.sequence = sequence;
+		this.volt = volt;
+		this.temp = temp;
+		this.light = light;
+		this.magX = magX;
+		this.magY = magY;
+		this.accelX = accelX;
+		this.accelY = accelY;
+		this.noise = noise;
+		this.timestamp = timestamp;
+	}
 }
