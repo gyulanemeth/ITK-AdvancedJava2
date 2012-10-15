@@ -33,6 +33,7 @@ public class LazyTableContentProvider implements ILazyContentProvider {
 		if (viewer instanceof TableViewer && newInput instanceof Collection) {
 			this.viewer = (TableViewer) viewer;
 			input = new ArrayList<Object>((Collection<?>) newInput);
+			this.viewer.setItemCount(input == null ? 0 : input.size());
 		}
 	}
 
