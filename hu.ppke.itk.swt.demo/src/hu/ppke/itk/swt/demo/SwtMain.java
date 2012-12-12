@@ -1,11 +1,16 @@
 package hu.ppke.itk.swt.demo;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.internal.jobs.Worker;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -16,11 +21,15 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -40,11 +49,16 @@ public class SwtMain {
 	 */
 	public static void main(final String[] args) {
 
+		System.out.println("SwtMain.main()");
+		
 		final Display display = new Display(); //create a display instance
 		
 		final Shell shell = new Shell(display); //create shell
 		shell.setLayout(new GridLayout(4, true)); //add layout for the composite
 		shell.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true)); //use maximum available size
+		
+		final Label label = new Label(shell, SWT.NONE);
+		label.setText("asd");
 		
 		final TableViewer viewer = new TableViewer(shell, SWT.NONE | SWT.VIRTUAL | SWT.FULL_SELECTION);
 //		viewer.setContentProvider(ArrayContentProvider.getInstance());
@@ -60,6 +74,25 @@ public class SwtMain {
 		viewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		viewer.setInput(input);
 		
+		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(3000);
+					
+					getDisplay().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							label.setText("qwe");
+						}
+					});
+					
+				} catch (final InterruptedException e) {
+				}
+			}
+		}).start();
 		
 		final Map<Gender, Set<Person>> persons = new HashMap<SwtMain.Gender, Set<Person>>();
 		persons.put(Gender.MALE, new HashSet<SwtMain.Person>());
@@ -79,6 +112,39 @@ public class SwtMain {
 		createTable(shell);
 		createTableViewer(shell);
 		
+		new Button(shell, SWT.PUSH).addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				
+				try {
+					new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
+						
+						@Override
+						public void run(IProgressMonitor monitor) throws InvocationTargetException,
+								InterruptedException {
+							
+							monitor.beginTask("My first task", 5);
+							Thread.sleep(2000L);
+							monitor.worked(1);
+							monitor.setTaskName("Second part");
+							Thread.sleep(1000L);
+							monitor.worked(2);
+							monitor.done();
+							// TODO Auto-generated method stub
+							
+						}
+					});
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		});
+		
 		shell.open(); //open shell
 		
 		while (!shell.isDisposed()) { //read and dispatch while shell is not closed
@@ -91,6 +157,14 @@ public class SwtMain {
 		
 		display.dispose(); //disposes the OS resource
 		
+	}
+	
+	public static void asyncExec(final Runnable runnable) {
+		getDisplay().asyncExec(runnable);
+	}
+	
+	public static Display getDisplay() {
+		return null == Display.getCurrent() ? Display.getDefault() : Display.getCurrent();
 	}
 	
 	private static void createTable(final Composite parent) {
