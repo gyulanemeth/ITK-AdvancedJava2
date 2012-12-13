@@ -2,6 +2,7 @@ package hu.ppke.itk.zh2.concurrency;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -20,10 +21,10 @@ public class Pojo {
 	//consider fail-fast object behavior.
 	//you may modify the API of the class.
 	
-	private Date startDate;
-	private Date endDate;
-	private Collection<?> collection;
-	private int[] ints;
+	private final Date startDate;
+	private final Date endDate;
+	private final Collection<?> collection;
+	private final int[] ints;
 
 	/**
 	 * Creates a new POJO instance.
@@ -38,34 +39,48 @@ public class Pojo {
 	 * </ul>
 	 */
 	public Pojo(final Date startDate, final Date endDate, final Collection<?> collection, final int... ints) {
+		
+		if (null == startDate) {
+			throw new NullPointerException("startDate");
+		}
+		
+		if (null == endDate) {
+			throw new NullPointerException("endDate");
+		}
+		
+		if (null == collection) {
+			throw new NullPointerException("collection");
+		}
+		
+		if (null == ints) {
+			throw new NullPointerException("ints");
+		}
+		
+		this.startDate = new Date(startDate.getTime());
+		this.endDate = new Date(endDate.getTime());
+		this.collection = Collections.unmodifiableCollection(collection);
+		this.ints = new int[ints.length];
+		System.arraycopy(ints, 0, this.ints, 0, ints.length);
+		
+		if (this.startDate.getTime() > this.endDate.getTime()) {
+			throw new IllegalAccessError("date mismatch");
+		}
+		
+		
 	}
 
 	/**
 	 * @return the startDate
 	 */
 	public Date getStartDate() {
-		return startDate;
-	}
-
-	/**
-	 * @param startDate the startDate to set
-	 */
-	public void setStartDate(final Date startDate) {
-		this.startDate = startDate;
+		return new Date(startDate.getTime());
 	}
 
 	/**
 	 * @return the endDate
 	 */
 	public Date getEndDate() {
-		return endDate;
-	}
-
-	/**
-	 * @param endDate the endDate to set
-	 */
-	public void setEndDate(final Date endDate) {
-		this.endDate = endDate;
+		return new Date(endDate.getTime());
 	}
 
 	/**
@@ -76,24 +91,12 @@ public class Pojo {
 	}
 
 	/**
-	 * @param collection the collection to set
-	 */
-	public void setCollection(final Collection<?> collection) {
-		this.collection = collection;
-	}
-
-	/**
 	 * @return the ints
 	 */
 	public int[] getInts() {
-		return ints;
-	}
-
-	/**
-	 * @param ints the ints to set
-	 */
-	public void setInts(final int[] ints) {
-		this.ints = ints;
+		final int [] copy = new int[ints.length];
+		System.arraycopy(ints, 0, copy, 0, ints.length);
+		return copy;
 	}
 
 	//XXX this main method is for testing
@@ -105,10 +108,10 @@ public class Pojo {
 		list.add(new Object());
 		
 		new Pojo(new Date(5000L), new Date(10000L), new ArrayList<Object>(), new int[] { 1, 2, 3});
-		new Pojo(new Date(10000L), new Date(5000L), list, 1, 2, 3);
-		new Pojo(new Date(5000L), new Date(10000L), null, new int[] { /*empty array*/ });
+//		new Pojo(new Date(10000L), new Date(5000L), list, 1, 2, 3);
+//		new Pojo(new Date(5000L), new Date(10000L), null, new int[] { /*empty array*/ });
 		new Pojo(new Date(5000L), new Date(10000L), list);
-		new Pojo(null, new Date(10000L), new ArrayList<Object>(), new int[] { 1, 2, 3});
+//		new Pojo(null, new Date(10000L), new ArrayList<Object>(), new int[] { 1, 2, 3});
 	}
 	
 }

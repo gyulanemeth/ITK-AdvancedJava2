@@ -1,6 +1,8 @@
 package hu.ppke.itk.zh2.swt;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -39,6 +41,23 @@ public class AsyncSwtUpdate {
 		
 		final Button button = new Button(shell, SWT.TOGGLE);
 		button.setText("Update UI");
+		
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override public void widgetSelected(final SelectionEvent arg0) {
+				display.asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(3000L);
+						} catch (final InterruptedException e) {
+						}
+						label.setText("asdasd");
+					}
+				});
+			}
+		});
+		
 
 		shell.open();
 		

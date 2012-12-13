@@ -12,13 +12,29 @@ public class Singleton {
 	//use the above constructor. 
 	//you may modify the visibility of the constructor.
 
+	private static Singleton instance;
+	
+	public static Singleton getInstance() {
+		
+		if (null == instance) {
+			synchronized (Singleton.class) {
+
+				if (null == instance) {
+					instance = new Singleton();
+				}
+				
+			}
+		}
+		return instance;
+	}
+	
 	
 	/**
 	 * Constructor for the singleton.
 	 * <b>NOTE:&nbsp;</b>Do not modify the business logic inside the constructor.<br>
 	 * You may alter the visibility if you want.
 	 */
-	Singleton() {
+	private Singleton() {
 		try {
 			Thread.sleep(2000L);
 		} catch (final InterruptedException e) {
@@ -33,6 +49,7 @@ public class Singleton {
 	 * <b>NOTE:&nbsp;</b>Do not modify this private static class.
 	 * @author akitta
 	 */
+	@SuppressWarnings("unused")
 	private static final class SingletonTest {
 		
 		public static void main(final String[] args) {
