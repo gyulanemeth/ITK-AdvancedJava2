@@ -1,0 +1,1 @@
+SWT 3.7.2 binary is available at: http://download.eclipse.org/eclipse/downloads/drops/R-3.7.2-201202080800/index.php#SWT
